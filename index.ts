@@ -14,3 +14,5 @@ program
   });
 
 program.parse(process.argv);
+
+// Checking if rebase worked
