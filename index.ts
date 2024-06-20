@@ -5,6 +5,9 @@ const path = require("path");
 const { Command } = require("commander");
 const program = new Command();
 
+import jsChunkDir from "./languages/jsChunkDir";
+import jsChunkFile from "./languages/jsChunkFile";
+
 program
   .version("1.0.0")
   .arguments("<directory>")
@@ -14,5 +17,10 @@ program
   });
 
 program.parse(process.argv);
+
+module.exports = {
+  jsChunkDir,
+  jsChunkFile,
+};
 
 // Checking if rebase worked
