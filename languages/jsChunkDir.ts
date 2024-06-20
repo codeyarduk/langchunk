@@ -5,3 +5,5 @@ interface jsChunkDirParams {
 const jsChunkDir = ({ path }: jsChunkDirParams) => {
   return;
 };
+
+export default jsChunkDir;
