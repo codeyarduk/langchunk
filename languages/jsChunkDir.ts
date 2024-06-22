@@ -31,14 +31,15 @@ const findChunks = ({ node, code }: findChunksParams) => {
   // console.log(code);
   const logNodeDetails = (node: any, depth: number = 0) => {
     // Log the current node's details
+    // console.log(node.type);
     if (node.type === "import_statement") {
-      console.log("We got em!");
-      console.log(
-        "START OF IMPORT STATEMENT: ",
-        node.startPosition,
-        "END OF IMPORT STATEMENT: ",
-        node.endPosition
-      );
+      // console.log("We got em!");
+      // console.log(
+      //   "START OF IMPORT STATEMENT: ",
+      //   node.startPosition,
+      //   "END OF IMPORT STATEMENT: ",
+      //   node.endPosition
+      // );
 
       const startPosition = node.startPosition;
       const endPosition = node.endPosition;
@@ -46,7 +47,17 @@ const findChunks = ({ node, code }: findChunksParams) => {
         startPosition.column,
         endPosition.column + 2
       );
-      console.log("Import Statement:", importStatement);
+      console.log("CHUNK:", importStatement);
+    }
+
+    if (node.type === "class_declaration") {
+      const startPosition = node.startPosition;
+      const endPosition = node.endPosition;
+      const classLines = code
+        .split("\n")
+        .slice(startPosition.row - 1, endPosition.row + 2);
+      const classCode = classLines.join("\n");
+      console.log("CHUNK:", classCode);
     }
 
     // Iterate through each child of the node
@@ -70,6 +81,19 @@ jsChunkDir({
 
   const myFunc = () => {
     return "Hello world!";
+    const myTwo = 'Hi two?';
+  }
+
+  class MyClass {
+    myMethod() {
+      return "Hello world!";
+    }
+  }
+
+  class MyClass2 {
+    myMethod() {
+      return "Hello world!";
+    }
   }
   
   `,
