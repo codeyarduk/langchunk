@@ -68,12 +68,13 @@ const findChunks = ({ node, code }: findChunksParams) => {
   };
 
   // Start logging from the root node
-  console.log(logNodeDetails(node.rootNode));
+  return logNodeDetails(node.rootNode);
   // return node.rootNode;
 };
 
-jsChunkDir({
-  code: ` 
+console.log(
+  jsChunkDir({
+    code: ` 
   import y from "hello";
   console.log("it's a good day!");
 
@@ -103,6 +104,7 @@ jsChunkDir({
 
   }  
   `,
-});
+  })
+);
 
 export default jsChunkDir;
