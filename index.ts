@@ -8,6 +8,7 @@
 import jsChunkDir from "./functions/languages/jsChunkDir";
 import jsChunkFile from "./functions/languages/jsChunkFile";
 import readFile from "./functions/readFiles/readFile";
+import readDir from "./functions/readFiles/readDir";
 
 // program
 //   .version("1.0.0")
@@ -18,11 +19,14 @@ import readFile from "./functions/readFiles/readFile";
 //   });
 
 (async () => {
-  const data = await jsChunkDir({
-    path: "./test_code/test1.ts",
-  });
+  const data = await readDir("./test_code/");
   console.log(data);
 })();
+
+// (async () => {
+//   const data = await jsChunkDir({ path: "./test_code/test1.ts" });
+//   console.log(data);
+// })();
 
 // await console.log(readFile({ path: "./test_code/test1.ts" }));
 // (async () => {
