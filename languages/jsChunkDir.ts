@@ -26,6 +26,7 @@ const jsChunkDir = ({ path, code }: jsChunkDirParams) => {
 const findChunks = ({ node, code }: findChunksParams) => {
   // Recursive function to log node details and its children
   const MAX_CHUNK_SIZE: number = 1000;
+  let goDeeper: boolean = false;
   let chunkArray = [];
 
   const logNodeDetails = (node: any, depth: number = 0) => {
@@ -44,15 +45,23 @@ const findChunks = ({ node, code }: findChunksParams) => {
         .split("\n")
         .slice(startPosition.row, endPosition.row + 1);
       const chunkCode = chunk.join("\n");
-      // console.log(chunkCode);
-      chunkArray.push(chunkCode);
+
+      if (chunkCode.length > MAX_CHUNK_SIZE) {
+        for (let i = 0; i < node.childCount; i++) {
+          const child = node.child(i);
+          logNodeDetails(child, depth + 1);
+        }
+      } else {
+        chunkArray.push([
+          chunkCode,
+          { start: startPosition, end: endPosition },
+        ]);
+      }
     }
     // Iterate through each child of the node
     for (let i = 0; i < node.childCount; i++) {
       const child = node.child(i);
-      if (depth < 6) {
-        logNodeDetails(child, depth + 1); // Recursively log details for each child
-      }
+      logNodeDetails(child, depth + 1);
     }
 
     return chunkArray;
@@ -62,8 +71,6 @@ const findChunks = ({ node, code }: findChunksParams) => {
   console.log(logNodeDetails(node.rootNode));
   // return node.rootNode;
 };
-
-const getChunks = () => {};
 
 jsChunkDir({
   code: ` 
