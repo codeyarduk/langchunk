@@ -18,7 +18,12 @@ const processDirectory = async (directoryPath: string) => {
     }
   }
 
-  return chunkedDir;
+  const chunkDirObject = {
+    dir_path: directoryPath,
+    data_chunks: chunkedDir,
+  }
+
+  return chunkDirObject;
 };
 
 export default processDirectory;

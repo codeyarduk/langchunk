@@ -28,18 +28,6 @@ import readDir from "./functions/readFiles/readDir";
 //   console.log(data);
 // })();
 
-// await console.log(readFile({ path: "./test_code/test1.ts" }));
-// (async () => {
-//   const data = await readFile({ path: "./test_code/test1.ts" });
-//   console.log(data);
-// })();
-
-// console.log(
-//   jsChunkDir({
-//
-//   })
-// );
-
 // program.parse(process.argv);
 
 export { jsChunkDir, jsChunkFile };
