@@ -69,47 +69,17 @@ const findChunks = ({ node, code, path }: findChunksParams) => {
       logNodeDetails(child, depth + 1);
     }
 
-    return chunkArray;
+    const chunkDirObject = {
+      file_path: path,
+      data_chunks: chunkArray,
+    };
+
+    return chunkDirObject;
   };
 
   // Start logging from the root node
   return logNodeDetails(node.rootNode);
   // return node.rootNode;
 };
-
-// console.log(
-//   jsChunkDir({
-//     code: `
-//   import y from "hello";
-//   console.log("it's a good day!");
-
-//   const myFunc = () => {
-//     return "Hello world!";
-//     const myTwo = 'Hi two?';
-//   }
-
-//   class MyClass {
-//     const myFunc2 = () => {
-//       return "Hello world!";
-//       const myTwo = 'Hi two?';
-//     }
-
-//     const myFunc3 = () => {
-//       return "Hello world!";
-//       const myTwo = 'Hi two?';
-//     }
-//   }
-
-//   class MyClass2 {
-//     myMethod() {
-//       return "Hello world!";
-//     }
-
-//     import y from "hello";
-
-//   }
-//   `,
-//   })
-// );
 
 export default jsChunkDir;
