@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "rabbitcode": "ts-node index.ts ."
+    "rabbitcode": "node index.js ."
   },
   "keywords": [],
   "author": "",
@@ -23,6 +23,6 @@
     "@types/node": "^20.14.6"
   },
   "bin": {
-    "rabbitcode": "./index.js"
+    "rabbitcode": "index.js"
   }
 }
