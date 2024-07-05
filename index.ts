@@ -10,10 +10,25 @@ import { argv } from "process";
   const path = argv[2]; // Get the directory path from the command-line arguments
   if (path) {
     const data = await readDir(path);
-    console.log(data);
+    // console.log(data);
+    // SEND DATA TO RABBITCODE SERVER
+
+    const response = await fetch("http://localhost:8787/test", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    const responseBody = await response.json();
+    console.log(responseBody);
   } else {
     console.log("Please provide a directory path.");
   }
 })();
 
 export { jsChunkDir, jsChunkFile };
+// npm run build
+// chmod +x dist/index.js
+// npm link
