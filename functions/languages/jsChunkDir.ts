@@ -9,7 +9,6 @@ interface jsChunkDirParams {
 }
 
 interface findChunksParams {
-  // node: Parser.Tree;
   node: any;
   code: string;
   path: string;
