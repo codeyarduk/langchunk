@@ -18,7 +18,7 @@ import { argv } from "process";
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(data),
+      // body: JSON.stringify(data),
     });
 
     const responseBody = await response.json();
