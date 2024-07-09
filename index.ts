@@ -10,9 +10,31 @@ import { argv } from "process";
 
 import http from "http";
 import url from "url";
-import open from "open";
+
 import fs from "fs";
 import path from "path";
+
+import { exec } from "child_process";
+
+function openBrowser(url: string) {
+  let command;
+  switch (process.platform) {
+    case "darwin":
+      command = `open "${url}"`;
+      break;
+    case "win32":
+      command = `start "${url}"`;
+      break;
+    default:
+      command = `xdg-open "${url}"`;
+  }
+
+  exec(command, (error) => {
+    if (error) {
+      console.error("Failed to open browser:", error);
+    }
+  });
+}
 
 // LOCAL SERVER TO RECEIVE TOKEN
 
@@ -50,7 +72,7 @@ async function authenticate() {
 
   try {
     const serverPromise = startLocalServer(port);
-    await open(authUrl);
+    openBrowser(authUrl);
     const token = await serverPromise;
 
     if (token) {
