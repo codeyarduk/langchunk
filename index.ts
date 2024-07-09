@@ -6,6 +6,14 @@ import readFile from "./functions/readFiles/readFile";
 import readDir from "./functions/readFiles/readDir";
 import { argv } from "process";
 
+// requires
+
+import http from "http";
+import url from "url";
+import open from "open";
+import fs from "fs";
+import path from "path";
+
 (async () => {
   const path = argv[2]; // Get the directory path from the command-line arguments
   if (path) {
