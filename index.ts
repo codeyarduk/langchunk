@@ -46,7 +46,7 @@ function startLocalServer(port = 8000) {
 
 async function authenticate() {
   const port = 8000;
-  const authUrl = `https://auth.codeyard.co.uk/cli?port=${port}`;
+  const authUrl = `https://auth.codeyard.co.uk/login?port=${port}`;
 
   try {
     const serverPromise = startLocalServer(port);
