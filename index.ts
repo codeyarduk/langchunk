@@ -135,7 +135,7 @@ async function authenticate() {
 
 async function saveToken(token: any) {
   const configPath = path.join(process.cwd(), ".wilson-config.json");
-  const config = { token };
+  const config = token ? { token } : {};
   fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
   console.log(`Token saved to ${configPath}`);
 }
@@ -144,6 +144,7 @@ async function saveToken(token: any) {
 
 async function loadToken() {
   const configPath = path.join(process.cwd(), ".wilson-config.json");
+  console.log(configPath);
   if (fs.existsSync(configPath)) {
     const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
     return config.token;
@@ -158,6 +159,8 @@ async function loadToken() {
   if (path) {
     // CHECK IF USER IS LOGGED IN
     let token = await loadToken();
+    console.log("this");
+    console.log(token);
     if (!token) {
       console.log("User not logged in. Starting authentication process...");
       token = await authenticate();
@@ -174,16 +177,17 @@ async function loadToken() {
     // console.log(data);
     // SEND DATA TO RABBITCODE SERVER
 
-    const response = await fetch("http://localhost:8787/test", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      // body: JSON.stringify(data),
-    });
+    // const response = await fetch("http://localhost:8787/test", {
+    // method: "GET",
+    // headers: {
+    // "Content-Type": "application/json",
+    // },
+    // body: JSON.stringify(data),
+    // });
 
-    const responseBody = await response.json();
-    console.log(responseBody);
+    // const responseBody = await response.json();
+    // console.log(responseBody);
+    console.log("dumn asdss");
   } else {
     console.log("Please provide a directory path.");
   }
