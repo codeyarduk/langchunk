@@ -16,6 +16,43 @@ import path from "path";
 
 import { exec } from "child_process";
 
+class Spinner {
+  private frames: string[];
+  private interval: NodeJS.Timeout | null;
+  private currentFrame: number;
+  private message: string;
+
+  constructor() {
+    this.frames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
+    this.interval = null;
+    this.currentFrame = 0;
+    this.message = "";
+  }
+
+  public start(message: string = "Loading..."): void {
+    this.message = message;
+    this.currentFrame = 0;
+    this.interval = setInterval(() => {
+      process.stdout.write(
+        `\r${this.frames[this.currentFrame]} ${this.message}`
+      );
+      this.currentFrame = (this.currentFrame + 1) % this.frames.length;
+    }, 80);
+  }
+
+  public stop(): void {
+    if (this.interval) {
+      clearInterval(this.interval);
+      this.interval = null;
+    }
+    process.stdout.write("\r\x1b[K"); // Clear the line
+  }
+
+  public updateMessage(message: string): void {
+    this.message = message;
+  }
+}
+
 function openBrowser(url: string) {
   let command;
   switch (process.platform) {
@@ -68,12 +105,17 @@ function startLocalServer(port = 8000) {
 
 async function authenticate() {
   const port = 8000;
-  const authUrl = `https://auth.codeyard.co.uk/login?port=${port}`;
+  const authUrl = `https://auth.codeyard.co.uk/api/cli?port=${port}`;
+  // auth.codeyard.co.uk/api/cli
+
+  const spinner = new Spinner();
+  spinner.start("Waiting for authentication");
 
   try {
     const serverPromise = startLocalServer(port);
     openBrowser(authUrl);
     const token = await serverPromise;
+    spinner.stop();
 
     if (token) {
       console.log(`Received token: ${token}`);
@@ -83,6 +125,7 @@ async function authenticate() {
       return null;
     }
   } catch (error) {
+    spinner.stop();
     console.error("Authentication error:", error);
     return null;
   }
@@ -116,9 +159,7 @@ async function loadToken() {
     // CHECK IF USER IS LOGGED IN
     let token = await loadToken();
     if (!token) {
-      console.log(
-        "No existing token found. Starting authentication process..."
-      );
+      console.log("User not logged in. Starting authentication process...");
       token = await authenticate();
 
       if (token) {
