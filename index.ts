@@ -78,16 +78,49 @@ function openBrowser(url: string) {
 function startLocalServer(port = 8000) {
   return new Promise((resolve, reject) => {
     const server = http.createServer((req, res) => {
-      const parsedUrl = url.parse((req as any).url, true);
-      const token = parsedUrl.query.token;
+      // Add CORS headers
+      res.setHeader("Access-Control-Allow-Origin", "*");
+      res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+      res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
-      res.writeHead(200, { "Content-Type": "text/html" });
+      if (req.method === "OPTIONS") {
+        // Handle preflight requests
+        res.writeHead(204);
+        res.end();
+        return;
+      }
 
-      if (token) {
-        res.end("Authentication successful! You can close this window.");
-        server.close(() => resolve(token));
+      if (req.method === "POST") {
+        let body = "";
+
+        // Collect data from the request
+        req.on("data", (chunk) => {
+          body += chunk.toString();
+        });
+
+        // Handle the end of the data stream
+        req.on("end", () => {
+          try {
+            const parsedBody = JSON.parse(body);
+            const token = parsedBody.token;
+
+            res.writeHead(200, { "Content-Type": "text/html" });
+            if (token) {
+              res.end("Authentication successful! You can close this window.");
+              server.close(() => resolve(token));
+            } else {
+              res.end("No token received. Please try again.");
+            }
+          } catch (error) {
+            res.writeHead(400, { "Content-Type": "text/html" });
+            res.end(
+              "Invalid JSON received. Please send a valid JSON object with a token."
+            );
+          }
+        });
       } else {
-        res.end("No token received. Please try again.");
+        res.writeHead(405, { "Content-Type": "text/html" });
+        res.end("Method not allowed. Please send a POST request.");
       }
     });
 
@@ -105,7 +138,9 @@ function startLocalServer(port = 8000) {
 
 async function authenticate() {
   const port = 8000;
-  const authUrl = `https://auth.codeyard.co.uk/api/cli?port=${port}`;
+  const authUrl = `https://auth.wilson.codeyard.co.uk/api/cli?port=${port}`;
+  // const authUrl = `http://localhost:8787/api/cli?port=${port}`;
+  // http://localhost:8787
   // auth.codeyard.co.uk/api/cli
 
   const spinner = new Spinner();
