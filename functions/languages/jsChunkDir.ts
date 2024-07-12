@@ -6,15 +6,17 @@ import readFile from "../readFiles/readFile";
 interface jsChunkDirParams {
   path: string;
   code?: string;
+  languageNodes?: string;
 }
 
 interface findChunksParams {
   node: any;
   code: string;
   path: string;
+  languageNodes: Array<string>;
 }
 
-const jsChunkDir = async ({ path }: jsChunkDirParams) => {
+const jsChunkDir = async ({ path, languageNodes }: jsChunkDirParams) => {
   const code = await readFile({ path: path });
   const parser = new Parser();
   parser.setLanguage(JavaScript);
@@ -23,23 +25,29 @@ const jsChunkDir = async ({ path }: jsChunkDirParams) => {
     console.log("Failed to parse the code");
   }
   // console.log("hi");
-  return findChunks({ node: tree, code: (tree as any).input, path });
+  return findChunks({
+    node: tree,
+    code: (tree as any).input,
+    path,
+    languageNodes: Array.isArray(languageNodes) ? languageNodes : [],
+  });
 };
 
-const findChunks = ({ node, code, path }: findChunksParams) => {
+const findChunks = ({ node, code, path, languageNodes }: findChunksParams) => {
   // Recursive function to log node details and its children
   const MAX_CHUNK_SIZE: number = 1000;
   let goDeeper: boolean = false;
   let chunkArray = [];
 
   const logNodeDetails = (node: any, depth: number = 0) => {
-    const listAllowedNodeTypes = [
-      "import_statement",
-      "lexical_declaration",
-      "class_declaration",
-      "function_declaration",
-      "arrow_function",
-    ];
+    // const listAllowedNodeTypes = [
+    //   "import_statement",
+    //   "lexical_declaration",
+    //   "class_declaration",
+    //   "function_declaration",
+    //   "arrow_function",
+    // ];
+    const listAllowedNodeTypes = languageNodes;
     // console.log(node.type, node.startPosition, node.endPosition);
     if (listAllowedNodeTypes.includes(node.type)) {
       const startPosition = node.startPosition;
