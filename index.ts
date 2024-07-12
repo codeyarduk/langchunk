@@ -34,7 +34,7 @@ class Spinner {
     this.currentFrame = 0;
     this.interval = setInterval(() => {
       process.stdout.write(
-        `\r${this.frames[this.currentFrame]} ${this.message}`
+        `\r${this.frames[this.currentFrame]} ${this.message}`,
       );
       this.currentFrame = (this.currentFrame + 1) % this.frames.length;
     }, 80);
@@ -75,9 +75,14 @@ function openBrowser(url: string) {
 
 // LOCAL SERVER TO RECEIVE TOKEN
 
-function startLocalServer(port = 8000) {
+function startLocalServer(CALLBACK_PORT = 8000) {
   return new Promise((resolve, reject) => {
     const server = http.createServer((req, res) => {
+      if (!req.url) {
+        res.writeHead(400, { "Content-Type": "text/plain" });
+        res.end("Bad Request");
+        return;
+      }
       // Add CORS headers
       res.setHeader("Access-Control-Allow-Origin", "*");
       res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
@@ -89,48 +94,40 @@ function startLocalServer(port = 8000) {
         res.end();
         return;
       }
-
-      if (req.method === "POST") {
-        let body = "";
-
-        // Collect data from the request
-        req.on("data", (chunk) => {
-          body += chunk.toString();
-        });
-
-        // Handle the end of the data stream
-        req.on("end", () => {
-          try {
-            const parsedBody = JSON.parse(body);
-            const token = parsedBody.token;
-
-            res.writeHead(200, { "Content-Type": "text/html" });
-            if (token) {
-              res.end("Authentication successful! You can close this window.");
-              server.close(() => resolve(token));
-            } else {
-              res.end("No token received. Please try again.");
-            }
-          } catch (error) {
-            res.writeHead(400, { "Content-Type": "text/html" });
-            res.end(
-              "Invalid JSON received. Please send a valid JSON object with a token."
-            );
-          }
-        });
+      const url = new URL(req.url, `http://localhost:${CALLBACK_PORT}`);
+      if (url.pathname === "/callback") {
+        const token = url.searchParams.get("token");
+        if (token) {
+          res.writeHead(200, { "Content-Type": "text/html" });
+          res.end(
+            "<h1>Authentication successful! You can close this window.</h1>",
+          );
+          server.close();
+          resolve(token);
+        } else {
+          reject(new Error("No token received"));
+        }
       } else {
         res.writeHead(405, { "Content-Type": "text/html" });
-        res.end("Method not allowed. Please send a POST request.");
+        res.end(
+          "<h1>Method not allowed. Please send a valid token request.</h1>",
+        );
       }
     });
 
-    server.listen(port, (err: void) => {
+    server.listen(CALLBACK_PORT, (err: void) => {
       if (err as any) {
         reject(err);
       } else {
-        console.log(`Server started at http://localhost:${port}`);
+        console.log(`Server started at http://localhost:${CALLBACK_PORT}`);
       }
     });
+
+    // Timeout after 5 minutes
+    setTimeout(() => {
+      server.close();
+      reject(new Error("Authentication timed out"));
+    }, 300000);
   });
 }
 
