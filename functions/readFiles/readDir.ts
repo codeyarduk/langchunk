@@ -11,7 +11,7 @@ const processDirectory = async (directoryPath: string) => {
     const filePath = path.join(directoryPath, file);
     const stats = await fs.promises.stat(filePath);
 
-    if (stats.isFile() && path.extname(filePath) === ".ts") {
+    if (stats.isFile() && path.extname(filePath) === ".js") {
       const data = await jsChunkDir({ path: filePath });
 
       chunkedDir.push(data);
@@ -20,8 +20,8 @@ const processDirectory = async (directoryPath: string) => {
 
   const chunkDirObject = {
     dir_path: directoryPath,
-    data_chunks: chunkedDir,
-  }
+    dir_data: chunkedDir,
+  };
 
   return chunkDirObject;
 };

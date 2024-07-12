@@ -34,7 +34,7 @@ class Spinner {
     this.currentFrame = 0;
     this.interval = setInterval(() => {
       process.stdout.write(
-        `\r${this.frames[this.currentFrame]} ${this.message}`,
+        `\r${this.frames[this.currentFrame]} ${this.message}`
       );
       this.currentFrame = (this.currentFrame + 1) % this.frames.length;
     }, 80);
@@ -100,7 +100,7 @@ function startLocalServer(CALLBACK_PORT = 8000) {
         if (token) {
           res.writeHead(200, { "Content-Type": "text/html" });
           res.end(
-            "<h1>Authentication successful! You can close this window.</h1>",
+            "<h1>Authentication successful! You can close this window.</h1>"
           );
           server.close();
           resolve(token);
@@ -110,7 +110,7 @@ function startLocalServer(CALLBACK_PORT = 8000) {
       } else {
         res.writeHead(405, { "Content-Type": "text/html" });
         res.end(
-          "<h1>Method not allowed. Please send a valid token request.</h1>",
+          "<h1>Method not allowed. Please send a valid token request.</h1>"
         );
       }
     });
@@ -166,7 +166,7 @@ async function authenticate() {
 // SAVE THE TOKEN TO THE .wilson-config.json FILE
 
 async function saveToken(token: any) {
-  const configPath = path.join(process.cwd(), ".wilson-config.json");
+  const configPath = path.join(__dirname, ".wilson-config.json");
   const config = token ? { token } : {};
   fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
   console.log(`Token saved to ${configPath}`);
@@ -175,7 +175,7 @@ async function saveToken(token: any) {
 // LOAD THE TOKEN FROM THE .wilson-config.json FILE
 
 async function loadToken() {
-  const configPath = path.join(process.cwd(), ".wilson-config.json");
+  const configPath = path.join(__dirname, ".wilson-config.json");
   console.log(configPath);
   if (fs.existsSync(configPath)) {
     const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
@@ -206,20 +206,26 @@ async function loadToken() {
     }
     // READ FILES FROM DIRECTORY
     const data = await readDir(path);
-    // console.log(data);
-    // SEND DATA TO RABBITCODE SERVER
+    // console.log(path);
+    console.log(data);
 
-    // const response = await fetch("http://localhost:8787/test", {
-    // method: "GET",
-    // headers: {
-    // "Content-Type": "application/json",
-    // },
-    // body: JSON.stringify(data),
-    // });
+    const response = await fetch("https://rag.codeyard.co.uk/chunk", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ data: JSON.stringify(data), token: token }),
+    });
 
-    // const responseBody = await response.json();
-    // console.log(responseBody);
-    console.log("dumn asdss");
+    if (response.ok) {
+      const responseData = await response.json();
+      console.log(responseData);
+    } else {
+      console.error(
+        "Failed to send data to server. Error:",
+        response.statusText
+      );
+    }
   } else {
     console.log("Please provide a directory path.");
   }
