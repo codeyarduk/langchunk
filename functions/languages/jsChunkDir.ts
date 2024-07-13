@@ -13,7 +13,6 @@ interface findChunksParams {
   node: any;
   code: string;
   path: string;
-  languageNodes: Array<string>;
 }
 
 const jsChunkDir = async ({ path, languageNodes }: jsChunkDirParams) => {
@@ -25,30 +24,28 @@ const jsChunkDir = async ({ path, languageNodes }: jsChunkDirParams) => {
     console.log("Failed to parse the code");
   }
   // console.log("hi");
-  return findChunks({
-    node: tree,
-    code: (tree as any).input,
-    path,
-    languageNodes: Array.isArray(languageNodes) ? languageNodes : [],
-  });
+  return findChunks({ node: tree, code: (tree as any).input, path });
 };
 
-const findChunks = ({ node, code, path, languageNodes }: findChunksParams) => {
+const findChunks = ({ node, code, path }: findChunksParams) => {
   // Recursive function to log node details and its children
   const MAX_CHUNK_SIZE: number = 1000;
   let goDeeper: boolean = false;
   let chunkArray = [];
+  let checkDuplicates: string[] = [];
+  let tempChunks: string = "";
+  let tempChunkLength: number = 0;
 
   const logNodeDetails = (node: any, depth: number = 0) => {
-    // const listAllowedNodeTypes = [
-    //   "import_statement",
-    //   "lexical_declaration",
-    //   "class_declaration",
-    //   "function_declaration",
-    //   "arrow_function",
-    // ];
-    const listAllowedNodeTypes = languageNodes;
-    // console.log(node.type, node.startPosition, node.endPosition);
+    const listAllowedNodeTypes = [
+      "import_statement",
+      "lexical_declaration",
+      "class_declaration",
+      "function_declaration",
+      "arrow_function",
+      "if_statement",
+      "await_expression",
+    ];
     if (listAllowedNodeTypes.includes(node.type)) {
       const startPosition = node.startPosition;
       const endPosition = node.endPosition;
@@ -63,11 +60,23 @@ const findChunks = ({ node, code, path, languageNodes }: findChunksParams) => {
           logNodeDetails(child, depth + 1);
         }
       } else {
-        chunkArray.push({
-          data: chunkCode,
-          position: { start: startPosition, end: endPosition },
-          file_name: path,
-        });
+        if (!checkDuplicates.includes(chunkCode)) {
+          checkDuplicates.push(chunkCode);
+          // console.log(chunkCode);
+
+          if (tempChunkLength > 500) {
+            // console.log("ISSUEE!!!!!!!!!!");
+            chunkArray.push({
+              data: tempChunks,
+              file_name: path,
+            });
+            tempChunks = "";
+            tempChunkLength = 0;
+          } else {
+            tempChunkLength += chunkCode.length;
+            tempChunks = `${tempChunks}\n${chunkCode}`;
+          }
+        }
       }
     }
     // Iterate through each child of the node
@@ -76,10 +85,19 @@ const findChunks = ({ node, code, path, languageNodes }: findChunksParams) => {
       logNodeDetails(child, depth + 1);
     }
 
+    if (tempChunks.length > 0) {
+      chunkArray.push({
+        data: tempChunks,
+        file_name: path,
+      });
+    }
+
     const chunkDirObject = {
       file_path: path,
       data_chunks: chunkArray,
     };
+
+    // console.log(chunkDirObject);
 
     return chunkDirObject;
   };

@@ -1,9 +1,11 @@
-#!/usr/bin/env ts-node
+import http from "http";
+import url from "url";
 
-import jsChunkDir from "./functions/languages/jsChunkDir";
-import jsChunkFile from "./functions/languages/jsChunkFile";
-import readFile from "./functions/readFiles/readFile";
-import readDir from "./functions/readFiles/readDir";
+
+import jsChunkDir from "../functions/languages/jsChunkDir";
+import jsChunkFile from "../functions/languages/jsChunkFile";
+import readFile from "../functions/readFiles/readFile";
+import readDir from "../functions/readFiles/readDir";
 import { argv } from "process";
 
 // requires
