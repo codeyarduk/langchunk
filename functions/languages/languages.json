@@ -1,0 +1,9 @@
+{
+  "javascript": [
+    "import_statement",
+    "lexical_declaration",
+    "class_declaration",
+    "function_declaration",
+    "arrow_function"
+  ]
+}
