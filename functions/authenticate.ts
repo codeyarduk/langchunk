@@ -19,7 +19,7 @@ async function authenticate() {
     spinner.stop();
 
     if (token) {
-      console.log(`Received token: ${token}`);
+      console.log(`Login successful!`);
       return token;
     } else {
       console.log("Authentication failed");

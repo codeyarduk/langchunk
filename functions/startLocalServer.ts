@@ -43,9 +43,10 @@ function startLocalServer(CALLBACK_PORT = 8000) {
     server.listen(CALLBACK_PORT, (err: void) => {
       if (err as any) {
         reject(err);
-      } else {
-        console.log(`Server started at http://localhost:${CALLBACK_PORT}`);
       }
+      //  else {
+      //   console.log(`Server started at http://localhost:${CALLBACK_PORT}`);
+      // }
     });
 
     // Timeout after 5 minutes

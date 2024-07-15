@@ -1,4 +1,4 @@
-import jsChunkDir from "../languages/jsChunkDir";
+import chunkFile from "../languages/chunkFile";
 import fs from "fs";
 import path from "path";
 
@@ -15,7 +15,7 @@ const processDirectory = async (directoryPath: string) => {
     const stats = await fs.promises.stat(filePath);
 
     if (stats.isFile() && path.extname(filePath) === ".js") {
-      const data = await jsChunkDir({
+      const data = await chunkFile({
         path: filePath,
         // languageNodes: languageNodes.javascript,
       });
@@ -38,19 +38,3 @@ const processDirectory = async (directoryPath: string) => {
 };
 
 export default processDirectory;
-
-// data: '      const response = await fetch("https://rag.codeyard.co.uk/chunk", {\n' +
-// '        method: "POST",\n' +
-// '        headers: {\n' +
-// '          "Content-Type": "application/json",\n' +
-// '        },\n' +
-// '        body: JSON.stringify({ data: JSON.stringify(data), token: token }),\n' +
-// '      });',
-
-// data: '      const response = await fetch("https://rag.codeyard.co.uk/chunk", {\n' +
-// '        method: "POST",\n' +
-// '        headers: {\n' +
-// '          "Content-Type": "application/json",\n' +
-// '        },\n' +
-// '        body: JSON.stringify({ data: JSON.stringify(data), token: token }),\n' +
-// '      });',

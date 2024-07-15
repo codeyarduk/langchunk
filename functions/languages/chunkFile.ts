@@ -3,7 +3,7 @@ import JavaScript from "tree-sitter-javascript";
 import readFile from "../readFiles/readFile";
 
 // Type declarations
-interface jsChunkDirParams {
+interface chunkFileParams {
   path: string;
   code?: string;
   languageNodes?: string;
@@ -15,7 +15,7 @@ interface findChunksParams {
   path: string;
 }
 
-const jsChunkDir = async ({ path, languageNodes }: jsChunkDirParams) => {
+const chunkFile = async ({ path, languageNodes }: chunkFileParams) => {
   const code = await readFile({ path: path });
   const parser = new Parser();
   parser.setLanguage(JavaScript);
@@ -107,4 +107,4 @@ const findChunks = ({ node, code, path }: findChunksParams) => {
   // return node.rootNode;
 };
 
-export default jsChunkDir;
+export default chunkFile;
