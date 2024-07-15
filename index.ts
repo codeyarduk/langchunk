@@ -1,7 +1,6 @@
 #!/usr/bin/env ts-node
 
-import jsChunkDir from "./functions/languages/jsChunkDir";
-import jsChunkFile from "./functions/languages/jsChunkFile";
+// import jsChunkDir from "./functions/languages/chunkFile";
 import readDir from "./functions/readFiles/readDir";
 import { argv } from "process";
 
@@ -16,16 +15,17 @@ import loadToken from "./functions/loadToken";
   if (path) {
     // CHECK IF USER IS LOGGED IN
     let token = await loadToken();
-    console.log("this");
-    console.log(token);
+
     if (!token) {
-      console.log("User not logged in. Starting authentication process...");
+      console.log(
+        "Please login to your Wilson account in the browser to continue!"
+      );
       token = await authenticate();
 
       if (token) {
         await saveToken(token);
       } else {
-        console.error("Failed to obtain token. Exiting.");
+        console.error("Failed to login in.");
         process.exit(1);
       }
     }
@@ -56,7 +56,6 @@ import loadToken from "./functions/loadToken";
   }
 })();
 
-export { jsChunkDir, jsChunkFile };
 // npm run build
 // chmod +x dist/index.js
 // npm link
