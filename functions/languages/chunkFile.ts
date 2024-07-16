@@ -13,6 +13,7 @@ interface findChunksParams {
   node: any;
   code: string;
   path: string;
+  languageNodes?: string;
 }
 
 const chunkFile = async ({ path, languageNodes }: chunkFileParams) => {
@@ -24,28 +25,34 @@ const chunkFile = async ({ path, languageNodes }: chunkFileParams) => {
     console.log("Failed to parse the code");
   }
   // console.log("hi");
-  return findChunks({ node: tree, code: (tree as any).input, path });
+  return findChunks({
+    node: tree,
+    code: (tree as any).input,
+    path,
+    languageNodes,
+  });
 };
 
-const findChunks = ({ node, code, path }: findChunksParams) => {
+const findChunks = ({ node, code, path, languageNodes }: findChunksParams) => {
   // Recursive function to log node details and its children
   const MAX_CHUNK_SIZE: number = 1000;
   let goDeeper: boolean = false;
-  let chunkArray = [];
+  let chunkArray: any = [];
   let checkDuplicates: string[] = [];
   let tempChunks: string = "";
   let tempChunkLength: number = 0;
 
   const logNodeDetails = (node: any, depth: number = 0) => {
-    const listAllowedNodeTypes = [
-      "import_statement",
-      "lexical_declaration",
-      "class_declaration",
-      "function_declaration",
-      "arrow_function",
-      "if_statement",
-      "await_expression",
-    ];
+    // const listAllowedNodeTypes = [
+    // "import_statement",
+    // "lexical_declaration",
+    // "class_declaration",
+    // "function_declaration",
+    // "arrow_function",
+    // "if_statement",
+    // "await_expression",
+    // ];
+    const listAllowedNodeTypes = languageNodes || [""];
     if (listAllowedNodeTypes.includes(node.type)) {
       const startPosition = node.startPosition;
       const endPosition = node.endPosition;
@@ -77,6 +84,13 @@ const findChunks = ({ node, code, path }: findChunksParams) => {
             tempChunks = `${tempChunks}\n${chunkCode}`;
           }
         }
+
+        // if (tempChunks.length > 0) {
+        //   chunkArray.push({
+        //     data: tempChunks,
+        //     file_name: path,
+        //   });
+        // }
       }
     }
     // Iterate through each child of the node
@@ -90,14 +104,21 @@ const findChunks = ({ node, code, path }: findChunksParams) => {
         data: tempChunks,
         file_name: path,
       });
+
+      tempChunks = "";
+      tempChunkLength = 0;
     }
+
+    // console.log(tempChunks.length);
 
     const chunkDirObject = {
       file_path: path,
       data_chunks: chunkArray,
     };
 
-    // console.log(chunkDirObject);
+    // tempChunks = "";
+    // console.log(chunkArray);
+    // chunkArray = [];
 
     return chunkDirObject;
   };

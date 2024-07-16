@@ -4,6 +4,8 @@
     "lexical_declaration",
     "class_declaration",
     "function_declaration",
-    "arrow_function"
+    "arrow_function",
+    "if_statement",
+    "await_expression"
   ]
 }
