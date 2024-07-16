@@ -3,7 +3,7 @@ import path from "path";
 
 async function loadToken() {
   const configPath = path.join(__dirname, ".wilson-config.json");
-  console.log(configPath);
+  // console.log(configPath);
   if (fs.existsSync(configPath)) {
     const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
     return config.token;
