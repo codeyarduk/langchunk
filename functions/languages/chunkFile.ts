@@ -53,6 +53,7 @@ const findChunks = ({ node, code, path, languageNodes }: findChunksParams) => {
     // "await_expression",
     // ];
     const listAllowedNodeTypes = languageNodes || [""];
+    console.log(node.type);
     if (listAllowedNodeTypes.includes(node.type)) {
       const startPosition = node.startPosition;
       const endPosition = node.endPosition;

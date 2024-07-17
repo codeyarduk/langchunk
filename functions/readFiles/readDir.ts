@@ -20,25 +20,40 @@ const processDirectory = async (directoryPath: string) => {
 
   const files = await fs.promises.readdir(directoryPath);
 
+  const allowedFileExtentions = [".js", ".go", ".ts"];
+
   for (const file of files) {
     const filePath = path.join(directoryPath, file);
     const stats = await fs.promises.stat(filePath);
     let isDotFile = false;
+    let nodesForChunking;
 
     if (file[0] === ".") {
       isDotFile = true;
     }
 
-    if (stats.isFile() && path.extname(filePath) === ".js" && !isDotFile) {
+    if (
+      stats.isFile() &&
+      allowedFileExtentions.includes(path.extname(filePath)) &&
+      !isDotFile
+    ) {
+      if (path.extname(filePath) === ".go") {
+        nodesForChunking = languageNodes.go;
+      } else if (path.extname(filePath) === ".ts") {
+        nodesForChunking = languageNodes.javascript;
+      } else if (path.extname(filePath) === ".js") {
+        nodesForChunking = languageNodes.javascript;
+      }
       const data = await chunkFile({
         path: filePath,
-        languageNodes: languageNodes.javascript,
+        languageNodes: nodesForChunking,
       });
+      console.log("hi");
 
       if (!uniqueData.has(data)) {
         uniqueData.add(data);
         chunkedDir.push(data);
-        console.log(data);
+        // console.log(data);
       }
     }
   }
