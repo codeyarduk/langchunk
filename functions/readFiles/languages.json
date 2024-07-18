@@ -8,5 +8,5 @@
     "if_statement",
     "await_expression"
   ],
-  "go": ["expression_statement", "import"]
+  "go": ["expression_statement"]
 }

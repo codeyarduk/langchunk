@@ -43,17 +43,8 @@ const findChunks = ({ node, code, path, languageNodes }: findChunksParams) => {
   let tempChunkLength: number = 0;
 
   const logNodeDetails = (node: any, depth: number = 0) => {
-    // const listAllowedNodeTypes = [
-    // "import_statement",
-    // "lexical_declaration",
-    // "class_declaration",
-    // "function_declaration",
-    // "arrow_function",
-    // "if_statement",
-    // "await_expression",
-    // ];
     const listAllowedNodeTypes = languageNodes || [""];
-    console.log(node.type);
+    // console.log(node.type);
     if (listAllowedNodeTypes.includes(node.type)) {
       const startPosition = node.startPosition;
       const endPosition = node.endPosition;
@@ -73,7 +64,6 @@ const findChunks = ({ node, code, path, languageNodes }: findChunksParams) => {
           // console.log(chunkCode);
 
           if (tempChunkLength > 500) {
-            // console.log("ISSUEE!!!!!!!!!!");
             chunkArray.push({
               data: tempChunks,
               file_name: path,
@@ -85,13 +75,6 @@ const findChunks = ({ node, code, path, languageNodes }: findChunksParams) => {
             tempChunks = `${tempChunks}\n${chunkCode}`;
           }
         }
-
-        // if (tempChunks.length > 0) {
-        //   chunkArray.push({
-        //     data: tempChunks,
-        //     file_name: path,
-        //   });
-        // }
       }
     }
     // Iterate through each child of the node
@@ -100,17 +83,19 @@ const findChunks = ({ node, code, path, languageNodes }: findChunksParams) => {
       logNodeDetails(child, depth + 1);
     }
 
+    // NEEDS TO BE CHECK HERE TO MAKE SURE THAT DUPLICATED CONTENT ISN'T BEING PUSHED TO chunkArray
+
     if (tempChunks.length > 0) {
       chunkArray.push({
         data: tempChunks,
         file_name: path,
       });
 
+      console.log(tempChunks);
+
       tempChunks = "";
       tempChunkLength = 0;
     }
-
-    // console.log(tempChunks.length);
 
     const chunkDirObject = {
       file_path: path,
@@ -123,6 +108,9 @@ const findChunks = ({ node, code, path, languageNodes }: findChunksParams) => {
 
     return chunkDirObject;
   };
+
+  tempChunks = "";
+  tempChunkLength = 0;
 
   // Start logging from the root node
   return logNodeDetails(node.rootNode);

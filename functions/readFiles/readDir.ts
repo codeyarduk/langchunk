@@ -48,12 +48,12 @@ const processDirectory = async (directoryPath: string) => {
         path: filePath,
         languageNodes: nodesForChunking,
       });
-      console.log("hi");
+      // console.log("hi");
 
       if (!uniqueData.has(data)) {
         uniqueData.add(data);
         chunkedDir.push(data);
-        // console.log(data);
+        // console.log("DATA: ", data);
       }
     }
   }
