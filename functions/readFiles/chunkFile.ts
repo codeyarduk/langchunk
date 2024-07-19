@@ -1,8 +1,8 @@
 import Parser from "tree-sitter";
 import JavaScript from "tree-sitter-javascript";
-import readFile from "../readFiles/readFile";
+import readFile from "./readFile";
 
-// Type declarations
+// TYPE DECLARATIONS
 interface chunkFileParams {
   path: string;
   code?: string;
@@ -24,7 +24,7 @@ const chunkFile = async ({ path, languageNodes }: chunkFileParams) => {
   if (!tree) {
     console.log("Failed to parse the code");
   }
-  // console.log("hi");
+
   return findChunks({
     node: tree,
     code: (tree as any).input,
@@ -34,18 +34,19 @@ const chunkFile = async ({ path, languageNodes }: chunkFileParams) => {
 };
 
 const findChunks = ({ node, code, path, languageNodes }: findChunksParams) => {
-  // Recursive function to log node details and its children
   const MAX_CHUNK_SIZE: number = 1000;
-  let goDeeper: boolean = false;
   let chunkArray: any = [];
   let checkDuplicates: string[] = [];
   let tempChunks: string = "";
   let tempChunkLength: number = 0;
 
-  const logNodeDetails = (node: any, depth: number = 0) => {
+  // RECURSIVE FUNCTION TO LOOK FOR NODES OF INTEREST AND RETURN CHUNKS.
+
+  const getChunks = (node: any, depth: number = 0) => {
     const listAllowedNodeTypes = languageNodes || [""];
-    // console.log(node.type);
+
     if (listAllowedNodeTypes.includes(node.type)) {
+      // GET THE CHUNK
       const startPosition = node.startPosition;
       const endPosition = node.endPosition;
       const chunk = code
@@ -53,16 +54,17 @@ const findChunks = ({ node, code, path, languageNodes }: findChunksParams) => {
         .slice(startPosition.row, endPosition.row + 1);
       const chunkCode = chunk.join("\n");
 
+      // CHECK IF CHUNK IS TOO LONG, IF SO, GO ONE LEVEL DEEPER.
       if (chunkCode.length > MAX_CHUNK_SIZE) {
         for (let i = 0; i < node.childCount; i++) {
           const child = node.child(i);
-          logNodeDetails(child, depth + 1);
+          getChunks(child, depth + 1);
         }
       } else {
+        // CHECK IF CHUNK IS DUPLICATE
         if (!checkDuplicates.includes(chunkCode)) {
           checkDuplicates.push(chunkCode);
-          // console.log(chunkCode);
-
+          // IF CHUNK IS LARGE THAN 500 CHARACTERS, ADD IT TO THE CHUNK ARRAY.
           if (tempChunkLength > 500) {
             chunkArray.push({
               data: tempChunks,
@@ -70,6 +72,7 @@ const findChunks = ({ node, code, path, languageNodes }: findChunksParams) => {
             });
             tempChunks = "";
             tempChunkLength = 0;
+            // IF IT IS SMALLER THAN 500, ADD IT TO tempChunks.
           } else {
             tempChunkLength += chunkCode.length;
             tempChunks = `${tempChunks}\n${chunkCode}`;
@@ -77,43 +80,35 @@ const findChunks = ({ node, code, path, languageNodes }: findChunksParams) => {
         }
       }
     }
-    // Iterate through each child of the node
+
+    // ITERATE THROUGH EACH CHILD OF THE NODE.
     for (let i = 0; i < node.childCount; i++) {
       const child = node.child(i);
-      logNodeDetails(child, depth + 1);
+      getChunks(child, depth + 1);
     }
-
-    // NEEDS TO BE CHECK HERE TO MAKE SURE THAT DUPLICATED CONTENT ISN'T BEING PUSHED TO chunkArray
-
-    if (tempChunks.length > 0) {
-      chunkArray.push({
-        data: tempChunks,
-        file_name: path,
-      });
-
-      console.log(tempChunks);
-
-      tempChunks = "";
-      tempChunkLength = 0;
-    }
-
-    const chunkDirObject = {
-      file_path: path,
-      data_chunks: chunkArray,
-    };
-
-    // tempChunks = "";
-    console.log(chunkArray);
-    // chunkArray = [];
-
-    return chunkDirObject;
   };
 
   tempChunks = "";
   tempChunkLength = 0;
 
-  // Start logging from the root node
-  return logNodeDetails(node.rootNode);
+  // CALL RECURSIVE FUNCTION TO GET ALL CHUNKS.
+  getChunks(node.rootNode);
+
+  // CHECK IF CHUNKS WERE FOUND IN A FILE BUT ARE UNDER 500 CHARACTERS AFTER THE ENTIRE FILE WAS TRAVERSED.
+  if (tempChunks.length > 0) {
+    chunkArray.push({
+      data: tempChunks,
+      file_name: path,
+    });
+  }
+
+  // RETURN ALL OF THE CHUNKS FROM THE PROVIDED FILE.
+  const chunkFileObject = {
+    file_path: path,
+    data_chunks: chunkArray,
+  };
+
+  return chunkFileObject;
   // return node.rootNode;
 };
 

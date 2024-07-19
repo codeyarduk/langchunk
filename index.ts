@@ -1,7 +1,7 @@
 #!/usr/bin/env ts-node
 
 // import jsChunkDir from "./functions/languages/chunkFile";
-import readDir from "./functions/readFiles/readDir";
+import readDir from "./functions/readFiles/chunkDir";
 import { argv } from "process";
 
 import saveToken from "./functions/saveToken";
