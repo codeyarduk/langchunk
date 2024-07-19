@@ -103,7 +103,7 @@ const findChunks = ({ node, code, path, languageNodes }: findChunksParams) => {
     };
 
     // tempChunks = "";
-    // console.log(chunkArray);
+    console.log(chunkArray);
     // chunkArray = [];
 
     return chunkDirObject;
