@@ -1,11 +1,10 @@
-import chunkFile from "../languages/chunkFile";
+import chunkFile from "./chunkFile";
 import fs from "fs";
 import path from "path";
 import * as data from "./languages.json";
 
 const processDirectory = async (directoryPath: string) => {
   const chunkedDir = [];
-  const uniqueData = new Set();
 
   const configPath = path.join(__dirname, "languages.json");
   // console.log("PATH", configPath);
@@ -48,13 +47,10 @@ const processDirectory = async (directoryPath: string) => {
         path: filePath,
         languageNodes: nodesForChunking,
       });
-      console.log("hi");
+      // console.log("hi");
 
-      if (!uniqueData.has(data)) {
-        uniqueData.add(data);
-        chunkedDir.push(data);
-        // console.log(data);
-      }
+      chunkedDir.push(data);
+      console.log("DATA: ", data);
     }
   }
 
