@@ -1,19 +1,20 @@
-# Blue Chunk
+# wilson-cli
 
-Blue Chunk is an open-source repository for semantically chunking code.
+wilson-cli is a cli tool that allows you to connect your codebase with your wilson account.
 
 ---
 
 #### Supported languages
 
-- TypeScript
 - JavaScript
+- TypeScript
 - TSX
 - JSX
 
 **The following languages will be supported in the near future**
 
 - Go
+- Zig
 - Python
 - Rust
 - C
