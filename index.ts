@@ -32,7 +32,8 @@ import loadToken from "./functions/loadToken";
     // READ FILES FROM DIRECTORY
     const data = await readDir(path);
     // console.log(path);
-    console.log(data);
+    // console.log(data.dir_data[2].dir_data[0]);
+    console.log(data)
 
     const response = await fetch("https://api.wilson.codeyard.co.uk/chunk", {
       method: "POST",

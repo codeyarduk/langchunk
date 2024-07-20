@@ -2,64 +2,79 @@ import chunkFile from "./chunkFile";
 import fs from "fs";
 import path from "path";
 import * as data from "./languages.json";
+import ignore from "ignore";
 
-const processDirectory = async (directoryPath: string) => {
-  const chunkedDir = [];
-
+const processDirectory = async (directoryPath: string): Promise<any[]> => {
+  const chunkedFiles: any[] = [];
   const configPath = path.join(__dirname, "languages.json");
-  // console.log("PATH", configPath);
-  let languageNodes;
+  let languageNodes: any;
   if (fs.existsSync(configPath)) {
     languageNodes = JSON.parse(fs.readFileSync(configPath, "utf8"));
-    // return config.token;
-    // console.log("language nodes:", languageNodes);
+  }
+  const allowedFileExtensions = [".js", ".go", ".ts", ".tsx"];
+
+  // Read .gitignore file
+  const gitignorePath = path.join(directoryPath, ".gitignore");
+  const ig = ignore();
+  if (fs.existsSync(gitignorePath)) {
+    const gitignoreContent = await fs.promises.readFile(gitignorePath, "utf8");
+    ig.add(gitignoreContent);
   }
 
-  // console.log(languageNodes);
-
-  const files = await fs.promises.readdir(directoryPath);
-
-  const allowedFileExtentions = [".js", ".go", ".ts"];
-
-  for (const file of files) {
-    const filePath = path.join(directoryPath, file);
-    const stats = await fs.promises.stat(filePath);
-    let isDotFile = false;
-    let nodesForChunking;
-
-    if (file[0] === ".") {
-      isDotFile = true;
-    }
-
-    if (
-      stats.isFile() &&
-      allowedFileExtentions.includes(path.extname(filePath)) &&
-      !isDotFile
-    ) {
-      if (path.extname(filePath) === ".go") {
-        nodesForChunking = languageNodes.go;
-      } else if (path.extname(filePath) === ".ts") {
-        nodesForChunking = languageNodes.javascript;
-      } else if (path.extname(filePath) === ".js") {
-        nodesForChunking = languageNodes.javascript;
-      }
-      const data = await chunkFile({
-        path: filePath,
-        languageNodes: nodesForChunking,
-      });
-      // console.log("hi");
-
-      chunkedDir.push(data);
-      console.log("DATA: ", data);
-    }
-  }
-
-  const chunkDirObject = {
-    dir_path: directoryPath,
-    dir_data: chunkedDir,
+  const isIgnored = (filePath: string): boolean => {
+    const relativePath = path.relative(directoryPath, filePath);
+    return ig.ignores(relativePath);
   };
 
-  return chunkDirObject;
+  const processFile = async (filePath: string) => {
+    try {
+      if (isIgnored(filePath)) {
+        return;
+      }
+
+      const stats = await fs.promises.stat(filePath);
+      const fileName = path.basename(filePath);
+      const fileExtension = path.extname(filePath);
+
+      if (stats.isDirectory()) {
+        const subDirFiles = await processDirectory(filePath);
+        chunkedFiles.push(...subDirFiles);
+      } else if (
+        stats.isFile() &&
+        allowedFileExtensions.includes(fileExtension) &&
+        !fileName.startsWith(".")
+      ) {
+        let nodesForChunking;
+        if (fileExtension === ".go") {
+          nodesForChunking = languageNodes.go;
+        } else if (fileExtension === ".ts" || fileExtension === ".js") {
+          nodesForChunking = languageNodes.javascript;
+        } else if (fileExtension === ".tsx") {
+          nodesForChunking = languageNodes.tsx;
+        }
+
+        const data = await chunkFile({
+          path: filePath,
+          languageNodes: nodesForChunking,
+        });
+
+        chunkedFiles.push({
+          file_path: filePath,
+          data_chunks: data,
+        });
+      }
+    } catch (error) {
+      console.error(`Error processing file ${filePath}:`, error);
+    }
+  };
+
+  const files = await fs.promises.readdir(directoryPath);
+  for (const file of files) {
+    const filePath = path.join(directoryPath, file);
+    await processFile(filePath);
+  }
+
+  return chunkedFiles;
 };
 
 export default processDirectory;
