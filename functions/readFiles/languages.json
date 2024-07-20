@@ -8,5 +8,16 @@
     "if_statement",
     "await_expression"
   ],
-  "go": ["expression_statement"]
+  "go": ["expression_statement"],
+  "tsx": [
+    "import_statement",
+    "lexical_declaration",
+    "class_declaration",
+    "function_declaration",
+    "arrow_function",
+    "if_statement",
+    "await_expression",
+    "jsx_element",
+    "statement_block"
+  ]
 }
