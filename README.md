@@ -1,6 +1,6 @@
-# Blue Chunk
+# wilson-cli
 
-Blue Chunk is an open-source repository for semantically chunking code.
+wilson-cli is a cli tool that allows you to connect your codebase with your wilson account.
 
 ---
 
