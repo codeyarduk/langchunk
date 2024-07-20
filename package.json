@@ -1,9 +1,12 @@
 {
-  "name": "wilson",
-  "version": "1.0.0",
+  "name": "wilson-cli",
+  "version": "0.1.1",
   "type": "commonjs",
   "description": "",
   "main": "index.js",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc"
