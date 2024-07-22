@@ -5,7 +5,7 @@
   "description": "",
   "main": "index.js",
   "files": [
-    "dist"
+    "dist/"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -29,6 +29,6 @@
     "@types/node": "^20.14.6"
   },
   "bin": {
-    "wilson": "./dist/index.js"
+    "wilson": "./dist/src/index.js"
   }
 }
