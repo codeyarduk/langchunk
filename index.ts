@@ -8,12 +8,17 @@ import saveToken from "./functions/saveToken";
 import authenticate from "./functions/authenticate";
 import loadToken from "./functions/loadToken";
 
+// import { select, Separator } from "@inquirer/prompts";
+// Or
+import select, { Separator } from "@inquirer/select";
+
 // MAIN
 
 (async () => {
   const path = argv[2]; // Get the directory path from the command-line arguments
   if (path) {
     // CHECK IF USER IS LOGGED IN
+
     let token = await loadToken();
 
     if (!token) {
@@ -29,19 +34,73 @@ import loadToken from "./functions/loadToken";
         process.exit(1);
       }
     }
+
     // READ FILES FROM DIRECTORY
-    const data = await readDir(path);
     // console.log(path);
     // console.log(data.dir_data[2].dir_data[0]);
-    console.log(data)
+    // console.log(data);
 
-    const response = await fetch("https://api.wilson.codeyard.co.uk/chunk", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ data: JSON.stringify(data), token: token }),
-    });
+    // console.log("TOKEN", token);
+
+    async function getProjects() {
+      try {
+        const projects = await fetch(
+          "https://api.wilson.codeyard.co.uk/cli/workspaces",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ token: token }),
+          }
+        );
+
+        if (projects.ok) {
+          const projectData = await projects.json();
+          // console.log(projectData);
+          let choicesArr = [];
+          for (let i = 0; i < projectData.workspaces.length; i++) {
+            choicesArr.push({
+              name: projectData.workspaces[i].workspaceName,
+              value: projectData.workspaces[i].workspaceId,
+            });
+          }
+
+          const answer = await select({
+            message:
+              "Select the project that you want to link this directory to",
+            choices: choicesArr,
+          });
+          return answer;
+        } else {
+          console.error("Failed to get projects. Error:", projects.statusText);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+      return null;
+    }
+
+    const workspaceId = await getProjects();
+
+    // console.log(project);
+
+    const data = await readDir(path);
+
+    const response = await fetch(
+      "https://api.wilson.codeyard.co.uk/cli/chunk",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          data: JSON.stringify(data),
+          token: token,
+          workspaceId: workspaceId,
+        }),
+      }
+    );
 
     if (response.ok) {
       const responseData = await response.json();
