@@ -81,7 +81,7 @@ import select, { Separator } from "@inquirer/select";
       return null;
     }
 
-    const project = await getProjects();
+    const workspaceId = await getProjects();
 
     // console.log(project);
 
@@ -94,7 +94,11 @@ import select, { Separator } from "@inquirer/select";
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ data: JSON.stringify(data), token: token }),
+        body: JSON.stringify({
+          data: JSON.stringify(data),
+          token: token,
+          workspaceId: workspaceId,
+        }),
       }
     );
 
