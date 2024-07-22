@@ -1,5 +1,5 @@
 {
-  "name": "wilson-cli",
+  "name": "@wilsonai/cli",
   "version": "0.1.3",
   "type": "commonjs",
   "description": "",
