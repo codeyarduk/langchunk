@@ -1,11 +1,11 @@
 {
   "name": "@wilsonai/cli",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "type": "commonjs",
   "description": "",
   "main": "index.js",
   "files": [
-    "dist"
+    "dist/"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -29,6 +29,6 @@
     "@types/node": "^20.14.6"
   },
   "bin": {
-    "wilson": "./dist/index.js"
+    "wilson": "./dist/src/index.js"
   }
 }
