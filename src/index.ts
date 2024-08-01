@@ -14,6 +14,9 @@ import select, { Separator } from "@inquirer/select";
 
 // MAIN
 
+const END_POINT_LOCAL = "http://localhost:8787";
+const END_POINT_PROD = "https://api.heywilson.dev";
+
 (async () => {
   const path = argv[2]; // Get the directory path from the command-line arguments
   if (path) {
@@ -44,25 +47,22 @@ import select, { Separator } from "@inquirer/select";
 
     async function getProjects() {
       try {
-        const projects = await fetch(
-          "https://api.wilson.codeyard.co.uk/cli/workspaces",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ token: token }),
-          }
-        );
+        const projects = await fetch(`${END_POINT_PROD}/cli/workspaces`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ token: token }),
+        });
 
         if (projects.ok) {
           const projectData = await projects.json();
           // console.log(projectData);
           let choicesArr = [];
-          for (let i = 0; i < projectData.workspaces.length; i++) {
+          for (let i = 0; i < projectData.length; i++) {
             choicesArr.push({
-              name: projectData.workspaces[i].workspaceName,
-              value: projectData.workspaces[i].workspaceId,
+              name: projectData[i].workspaceName,
+              value: projectData[i].workspaceId,
             });
           }
 
@@ -87,24 +87,24 @@ import select, { Separator } from "@inquirer/select";
 
     const data = await readDir(path);
 
-    const response = await fetch(
-      "https://api.wilson.codeyard.co.uk/cli/chunk",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          data: JSON.stringify(data),
-          token: token,
-          workspaceId: workspaceId,
-        }),
-      }
-    );
+    console.log(data);
+
+    const response = await fetch(`${END_POINT_PROD}/cli/chunk`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        data: JSON.stringify(data),
+        token: token,
+        workspaceId: workspaceId,
+      }),
+    });
 
     if (response.ok) {
       const responseData = await response.json();
       console.log(responseData);
+      // console.log("hello!");
     } else {
       console.error(
         "Failed to send data to server. Error:",
@@ -117,5 +117,5 @@ import select, { Separator } from "@inquirer/select";
 })();
 
 // npm run build
-// chmod +x dist/index.js
+// chmod +x dist/src/index.js
 // npm link
