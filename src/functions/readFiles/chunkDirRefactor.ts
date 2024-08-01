@@ -18,7 +18,7 @@ const processDirectory = async (directoryPath: string) => {
 
   const files = await fs.promises.readdir(directoryPath);
 
-  const allowedFileExtentions = [".js", ".go", ".ts"];
+  const allowedFileExtentions = [".js", ".go", ".ts", ".tsx", ".jsx"];
 
   for (const file of files) {
     const filePath = path.join(directoryPath, file);
@@ -42,6 +42,8 @@ const processDirectory = async (directoryPath: string) => {
       } else if (path.extname(filePath) === ".js") {
         nodesForChunking = languageNodes.javascript;
       } else if (path.extname(filePath) === ".tsx") {
+        nodesForChunking = languageNodes.tsx;
+      } else if (path.extname(filePath) === ".jsx") {
         nodesForChunking = languageNodes.tsx;
       }
       const data = await chunkFile({
