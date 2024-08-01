@@ -1,7 +1,10 @@
 {
   "name": "@wilsonai/cli",
-  "version": "0.1.4",
+  "version": "0.1.11",
   "type": "commonjs",
+  "peerDependencies": {
+    "ts-node": "^10.0.0"
+  },
   "description": "",
   "main": "index.js",
   "files": [
@@ -9,9 +12,17 @@
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc"
+    "postinstall": "npm install -g ts-node",
+    "build": "tsc",
+    "start": "cross-env NODE_PATH=./node_modules ts-node src/index.ts"
   },
-  "keywords": [],
+  "keywords": [
+    "wilson",
+    "cli",
+    "javascript",
+    "programming",
+    "assistant"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {

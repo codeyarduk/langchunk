@@ -8,10 +8,17 @@ import saveToken from "./functions/saveToken";
 import authenticate from "./functions/authenticate";
 import loadToken from "./functions/loadToken";
 
-// import { select, Separator } from "@inquirer/prompts";
-// Or
+import { spawnSync } from "child_process";
+import { join } from "path";
+
 import select, { Separator } from "@inquirer/select";
 
+// import { select, Separator } from "@inquirer/prompts";
+// Or
+
+// if (__filename.endsWith(".js")) {
+//   runWithTsNode();
+// } else {
 // MAIN
 
 const END_POINT_LOCAL = "http://localhost:8787";
@@ -115,7 +122,7 @@ const END_POINT_PROD = "https://api.heywilson.dev";
     console.log("Please provide a directory path.");
   }
 })();
-
+// }
 // npm run build
 // chmod +x dist/src/index.js
 // npm link
