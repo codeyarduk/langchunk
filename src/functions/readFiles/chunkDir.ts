@@ -11,7 +11,7 @@ const processDirectory = async (directoryPath: string): Promise<any[]> => {
   if (fs.existsSync(configPath)) {
     languageNodes = JSON.parse(fs.readFileSync(configPath, "utf8"));
   }
-  const allowedFileExtensions = [".js", ".go", ".ts", ".tsx", ".jsx"];
+  const allowedFileExtensions = [".js", ".ts", ".tsx", ".jsx"];
 
   // Read .gitignore file
   const gitignorePath = path.join(directoryPath, ".gitignore");
@@ -45,9 +45,7 @@ const processDirectory = async (directoryPath: string): Promise<any[]> => {
         !fileName.startsWith(".")
       ) {
         let nodesForChunking;
-        if (fileExtension === ".go") {
-          nodesForChunking = languageNodes.go;
-        } else if (fileExtension === ".ts" || fileExtension === ".js") {
+        if (fileExtension === ".ts" || fileExtension === ".js") {
           nodesForChunking = languageNodes.javascript;
         } else if (fileExtension === ".tsx") {
           nodesForChunking = languageNodes.tsx;
