@@ -11,6 +11,7 @@ const processDirectory = async (directoryPath: string): Promise<any[]> => {
   if (fs.existsSync(configPath)) {
     languageNodes = JSON.parse(fs.readFileSync(configPath, "utf8"));
   }
+
   const allowedFileExtensions = [".js", ".ts", ".tsx", ".jsx"];
 
   // Read .gitignore file
@@ -18,7 +19,14 @@ const processDirectory = async (directoryPath: string): Promise<any[]> => {
   const ig = ignore();
   if (fs.existsSync(gitignorePath)) {
     const gitignoreContent = await fs.promises.readFile(gitignorePath, "utf8");
-    ig.add(gitignoreContent);
+    const lines = gitignoreContent
+      .split("\n")
+      .map((line) => line.trim()) // Trim whitespace
+      .filter((line) => line && !line.startsWith("#")) // Ignore empty lines and comments
+      .map((line) => (line.endsWith("/") ? line.slice(0, -1) : line)); // Remove trailing slash if present
+
+    ig.add(lines);
+    console.log(lines);
   }
 
   const isIgnored = (filePath: string): boolean => {
